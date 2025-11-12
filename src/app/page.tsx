@@ -182,7 +182,9 @@ function Plans() {
             <ul className="mt-4 space-y-2 text-white/80">
               {t.features.map(f => <li key={f}>• {f}</li>)}
             </ul>
-            <Button href="/auth/register" className="mt-6">Empezar</Button>
+            <div className="mt-6">
+              <Button href="/auth/register">Empezar</Button>
+            </div>
           </motion.div>
         ))}
       </div>

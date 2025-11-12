@@ -35,10 +35,11 @@ export default function WebGuardPage() {
 
         // 👇 aquí usas tu helper en lugar del fetch directo
         const json = await apiFetch(
-        "/webguard/analyze",
-        { method: "POST", body: JSON.stringify({ url: domain }) },
-        token
+          "/webguard/analyze",
+          { method: "POST", body: JSON.stringify({ url: domain }) },
+          token ?? undefined
         )
+
 
         setData(json) // guarda los resultados en el estado
     } catch (err: any) {

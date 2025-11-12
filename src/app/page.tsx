@@ -236,17 +236,12 @@ export default function Page() {
         </AnimatePresence>
 
         <main className="relative z-10">
-          <StickySection id="home"><Hero /></StickySection>
+          <Hero />
           <StickySection id="about"><About /></StickySection>
           <StickySection id="products"><Products /></StickySection>
           <StickySection id="plans"><Plans /></StickySection>
           <StickySection id="contact"><Contact /></StickySection>
         </main>
-        <footer className="border-t border-white/10 py-10 text-center text-white/60">
-          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-            © {new Date().getFullYear()} Voryng — Seguridad práctica para crecer.
-          </div>
-        </footer>
       </LayoutGroup>
     </div>
   )

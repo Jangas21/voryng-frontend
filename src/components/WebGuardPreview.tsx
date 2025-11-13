@@ -3,15 +3,6 @@
 export function WebGuardPreview() {
   return (
     <div className="relative rounded-xl border border-white/10 bg-[#0b0d0f]/60 backdrop-blur-md p-6 shadow-xl overflow-hidden">
-      {/* Fondo con líneas animadas */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <img
-          src="/bg-lines.svg"
-          alt="pattern"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
       <div className="relative space-y-6">
         {/* Score */}
         <div>

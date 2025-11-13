@@ -1,12 +1,11 @@
 // ---------------------------------------------
-// Voryng Landing + SEO Perfecto
+// Voryng Landing + SEO Perfecto (Sólo WebGuard)
 // ---------------------------------------------
 
 'use client'
 
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import { useEffect, useState } from 'react'
-
 
 // === UI Components =========================================================
 
@@ -39,13 +38,11 @@ function IntroLogo({ onDone }: { onDone: () => void }) {
       <motion.img
         layoutId="voryng-logo"
         src="/logo.png"
-        alt="Logo de Voryng, plataforma de ciberseguridad para PYMEs"
+        alt="Logo de Voryng"
         initial={{ opacity: 0, scale: 1.4 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        onAnimationComplete={() => {
-          setTimeout(onDone, 500)
-        }}
+        onAnimationComplete={() => setTimeout(onDone, 500)}
         className="h-28 w-auto drop-shadow-2xl"
       />
     </div>
@@ -78,18 +75,18 @@ function Hero() {
         transition={{ duration: 1 }}
         className="relative z-10 px-6"
       >
-        <Pill>Seguridad inteligente para PYMEs</Pill>
+        <Pill>WebGuard · Auditoría Web Automática</Pill>
 
         <h1 className="mt-6 text-4xl sm:text-6xl font-semibold tracking-tight leading-tight">
-          Auditorías web y ciberseguridad para PYMEs con{' '}
+          Analiza y protege tu sitio web con{' '}
           <span className="bg-gradient-to-r from-cyan-400 via-white to-white/70 bg-clip-text text-transparent">
-            Voryng
+            WebGuard
           </span>
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl text-white/70">
-          WebGuard y CloudGuard monitorizan tu web e infraestructura, detectan riesgos
-          y priorizan acciones basadas en impacto real.
+          WebGuard detecta vulnerabilidades críticas, analiza cabeceras HTTP, verifica SSL,
+          evalúa cookies inseguras y genera un informe claro en segundos.
         </p>
 
         <div className="mt-8 flex items-center justify-center gap-3">
@@ -115,15 +112,17 @@ function About() {
   return (
     <div className="grid gap-8 md:grid-cols-2">
       <div>
-        <h2 className="text-3xl font-semibold">Quiénes somos</h2>
+        <h2 className="text-3xl font-semibold">Qué es WebGuard</h2>
         <p className="mt-3 text-white/70">
-          Somos un equipo apasionado por la ciberseguridad práctica. Construimos herramientas
-          que simplifican decisiones: qué corregir hoy, qué monitorizar mañana.
+          WebGuard es la herramienta de auditoría web desarrollada por Voryng.
+          Analiza automáticamente tu dominio y te muestra, en segundos,
+          qué riesgos tienes y cómo solucionarlos.
         </p>
         <ul className="mt-6 space-y-3 text-white/80">
-          <li>• Enfoque 80/20 (valor en días, no meses)</li>
-          <li>• Informes accionables y claros</li>
-          <li>• Integración sencilla con tu stack</li>
+          <li>• Cabeceras HTTP seguras y mal configuradas</li>
+          <li>• Certificados SSL expirados o inseguros</li>
+          <li>• Cookies sin atributos de seguridad</li>
+          <li>• Buenas prácticas esenciales para PYMEs</li>
         </ul>
       </div>
 
@@ -136,29 +135,34 @@ function About() {
 }
 
 function Products() {
-  const cards = [
-    {
-      title: 'WebGuard',
-      desc: 'Analiza tu dominio, cabeceras, SSL, cookies y expone un dashboard de hallazgos priorizados.'
-    },
-    {
-      title: 'Dashboards',
-      desc: 'Histórico de scans, comparativas y progreso por sprint para equipos.'
-    },
-  ]
-
   return (
     <>
-      <h2 className="text-3xl font-semibold">Cómo funciona</h2>
-      <p className="mt-2 max-w-2xl text-white/70">Herramientas modulares que puedes usar juntas o por separado.</p>
+      <h2 className="text-3xl font-semibold">Cómo funciona WebGuard</h2>
+      <p className="mt-2 max-w-2xl text-white/70">
+        WebGuard realiza un análisis completo de tu sitio web y genera un dashboard
+        claro con los hallazgos más críticos.
+      </p>
 
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((c) => (
+        {[
+          {
+            title: 'Análisis de cabeceras',
+            desc: 'Detecta si tu web envía cabeceras seguras como HSTS, CSP o X-Frame-Options.',
+          },
+          {
+            title: 'Verificación SSL',
+            desc: 'Comprueba si el certificado es válido, caduca pronto o usa cifrado débil.',
+          },
+          {
+            title: 'Revisión de cookies',
+            desc: 'Detecta cookies sin HttpOnly, Secure o SameSite.',
+          },
+        ].map(c => (
           <motion.div key={c.title} whileHover={{ y: -4 }} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
             <h3 className="text-xl font-semibold">{c.title}</h3>
             <p className="mt-2 text-white/70">{c.desc}</p>
             <div className="mt-6 flex gap-2">
-              <Button href={c.title === 'WebGuard' ? '/webguard' : '#'} variant="ghost">Ver más</Button>
+              <Button href="/webguard" variant="ghost">Probar ahora</Button>
             </div>
           </motion.div>
         ))}
@@ -169,15 +173,15 @@ function Products() {
 
 function Plans() {
   const tiers = [
-    { name: 'Free', price: '0€', features: ['1 dominio', '1 scan/semana', 'Informe básico'] },
-    { name: 'Pro', price: '29€', features: ['5 dominios', 'Scans diarios', 'PDF profesional'], highlight: true },
+    { name: 'Free', price: '0€', features: ['1 dominio', '1 análisis/semana', 'Informe básico'] },
+    { name: 'Pro', price: '29€', features: ['5 dominios', 'Scans diarios', 'Exportación PDF'], highlight: true },
     { name: 'Business', price: '99€', features: ['20 dominios', 'Alertas y API', 'Soporte prioritario'] },
   ]
 
   return (
     <>
-      <h2 className="text-3xl font-semibold">Planes</h2>
-      <p className="mt-2 max-w-2xl text-white/70">Empieza gratis y escálalo cuando lo necesites.</p>
+      <h2 className="text-3xl font-semibold">Planes WebGuard</h2>
+      <p className="mt-2 max-w-2xl text-white/70">Escala cuando tu empresa lo necesite.</p>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         {tiers.map(t => (
@@ -208,7 +212,9 @@ function Contact() {
     <div className="grid gap-8 md:grid-cols-2">
       <div>
         <h2 className="text-3xl font-semibold">Contacto</h2>
-        <p className="mt-2 text-white/70">Cuéntanos tu caso y te proponemos un plan claro en 48h.</p>
+        <p className="mt-2 text-white/70">
+          ¿Quieres utilizar WebGuard en tu empresa? Escríbenos y te respondemos en 48h.
+        </p>
 
         <div className="mt-6 space-y-2 text-white/80">
           <p>📧 hola@voryng.com</p>
@@ -238,14 +244,13 @@ export default function Page() {
     script.type = "application/ld+json"
     script.innerHTML = JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Voryng",
+      "@type": "WebApplication",
+      name: "WebGuard by Voryng",
       url: "https://voryng.com",
+      description: "WebGuard analiza cabeceras, SSL y cookies para detectar vulnerabilidades.",
+      applicationCategory: "SecurityApplication",
+      operatingSystem: "All",
       logo: "https://voryng.com/logo.png",
-      sameAs: [
-        "https://www.linkedin.com/company/voryng",
-        "https://twitter.com/voryng"
-      ]
     })
     document.head.appendChild(script)
   }, [])

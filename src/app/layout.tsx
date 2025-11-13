@@ -3,7 +3,8 @@ import "./globals.css"
 import AppShell from "@/components/AppShell"
 
 // === SEO Metadata (muy importante) ===============================
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL("https://voryng.com"),
   title: "Voryng | Auditorías Web y Ciberseguridad para PYMEs",
   description:
     "Analiza y protege tu web con WebGuard. Detecta vulnerabilidades críticas, cabeceras inseguras y configuraciones SSL en segundos.",
@@ -15,7 +16,7 @@ export const metadata = {
     "ciberseguridad para pymes",
     "análisis ssl",
     "cabeceras http",
-    "escaneo web"
+    "escaneo web",
   ],
   openGraph: {
     title: "Voryng | Auditorías Web y Ciberseguridad",
@@ -28,15 +29,15 @@ export const metadata = {
         url: "https://voryng.com/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Voryng análisis web"
-      }
+        alt: "Voryng análisis web",
+      },
     ],
     locale: "es_ES",
-    type: "website"
+    type: "website",
   },
   alternates: {
-    canonical: "https://voryng.com"
-  }
+    canonical: "https://voryng.com",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

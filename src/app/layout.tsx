@@ -43,6 +43,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="relative min-h-screen text-white overflow-x-hidden bg-black">
         <AppShell>{children}</AppShell>
       </body>

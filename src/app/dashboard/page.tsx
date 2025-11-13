@@ -1,23 +1,117 @@
-"use client";
+"use client"
 
-import Protected from "@/components/Protected";
-import { useAuth } from "@/context/AuthContext";
+import Protected from "@/components/Protected"
+import { useAuth } from "@/context/AuthContext"
+import Link from "next/link"
 
 export default function Dashboard() {
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth()
+
+  const isPro = user?.role === "pro" // O ajusta al campo real que uses
 
   return (
     <Protected>
-      <main className="p-6 max-w-3xl mx-auto space-y-4">
-        <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <button onClick={logout} className="rounded-xl border px-3 py-2">Cerrar sesión</button>
-        </header>
-        <div className="rounded-2xl border p-4">
-          <p><b>Usuario:</b> {user?.name ?? user?.email}</p>
-          <p className="break-all text-xs opacity-70 mt-2"><b>Token:</b> {token}</p>
+      <main className="w-full flex flex-col items-center mt-20 mb-20 px-5 space-y-10">
+
+        {/* =====================
+            Bienvenida
+        ====================== */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white">Hola, {user?.name} 👋</h1>
+          <p className="text-gray-300 mt-2 text-lg">
+            Bienvenido a tu panel de seguridad.
+          </p>
         </div>
+
+
+        {/* =====================
+            Grid del Dashboard
+        ====================== */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl w-full">
+
+          {/* --------- WebGuard --------- */}
+          <div className="rounded-xl p-7 bg-white/5 border border-white/10 backdrop-blur-lg shadow-lg">
+            <h2 className="text-2xl font-semibold text-white mb-2">🛡️ WebGuard</h2>
+            <p className="text-gray-300 mb-5">
+              Analiza tu web al instante: SSL, cabeceras, cookies, tecnologías y más.
+            </p>
+
+            <Link
+              href="/webguard"
+              className="px-5 py-3 rounded-lg text-center bg-white text-black font-semibold hover:bg-gray-200 transition block w-full"
+            >
+              Realizar análisis
+            </Link>
+
+            {/* Quick scans NO se guardan */}
+            {!isPro && (
+              <p className="text-gray-400 text-sm mt-4">
+                Los análisis rápidos no se guardan.  
+                <Link href="/planes" className="text-blue-400 hover:underline">
+                  ¡Hazte PRO para almacenar tus informes!
+                </Link>
+              </p>
+            )}
+          </div>
+
+
+          {/* --------- CloudGuard --------- */}
+          <div className="rounded-xl p-7 bg-white/5 border border-white/10 backdrop-blur-lg shadow-lg">
+            <h2 className="text-2xl font-semibold text-white mb-2">☁️ CloudGuard (próximamente)</h2>
+            <p className="text-gray-300 mb-5">
+              Auditorías automáticas para AWS, Google Cloud y Azure.
+            </p>
+
+            <button
+              disabled
+              className="px-5 py-3 rounded-lg w-full text-center bg-gray-700 text-gray-400 font-semibold cursor-not-allowed"
+            >
+              Disponible pronto
+            </button>
+          </div>
+
+
+          {/* --------- Cuenta --------- */}
+          <div className="rounded-xl p-7 bg-white/5 border border-white/10 backdrop-blur-lg shadow-lg">
+            <h2 className="text-2xl font-semibold text-white mb-2">👤 Tu cuenta</h2>
+
+            <div className="text-gray-300 space-y-2 mb-6">
+              <p><strong className="text-white">Nombre:</strong> {user?.name}</p>
+              <p><strong className="text-white">Email:</strong> {user?.email}</p>
+              <p>
+                <strong className="text-white">Plan:</strong>{" "}
+                {isPro ? "PRO" : "Gratuito"}
+              </p>
+            </div>
+
+            <button
+              onClick={logout}
+              className="px-5 py-3 rounded-lg bg-red-500/80 text-white font-semibold hover:bg-red-600 transition w-full"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+
+
+          {/* --------- Historial solo si es PRO --------- */}
+          {isPro && (
+            <div className="rounded-xl p-7 bg-white/5 border border-white/10 backdrop-blur-lg shadow-lg md:col-span-2">
+              <h2 className="text-2xl font-semibold text-white mb-4">📑 Historial de reportes PRO</h2>
+
+              <p className="text-gray-400 mb-4">
+                Aquí aparecerán todos tus reportes guardados.
+              </p>
+
+              {/* Aquí cuando tengas backend: tabla de reportes */}
+              <p className="text-gray-500 italic">
+                (Aún no hay reportes guardados)
+              </p>
+            </div>
+          )}
+
+        </div>
+
       </main>
     </Protected>
-  );
+  )
 }

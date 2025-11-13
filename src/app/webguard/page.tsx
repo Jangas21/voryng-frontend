@@ -5,13 +5,28 @@ import Protected from "@/components/Protected"
 import { useAuth } from "@/context/AuthContext"
 import { apiFetch } from "@/lib/api"
 
+import { ScoreCard } from "@/components/webguard/ScoreCard"
+import { RiskList } from "@/components/webguard/RiskList"
+import { GoodPoints } from "@/components/webguard/GoodPoints"
+import { TechnicalAccordion } from "@/components/webguard/TechnicalAccordion"
+import { UpgradeCTA } from "@/components/webguard/UpgradeCTA"
+
 type ScanResult = {
-  domain: string
-  score?: number
-  headers?: Record<string,string>
-  ssl?: { valid: boolean; issuer?: string; expiresInDays?: number }
+  url: string
+  quick_score: number
+  grade: string
+  risks: Array<{
+    title: string
+    severity: string
+    why: string
+  }>
+  good_points: string[]
+  summary?: Record<string, any>
+  findings?: any[]
+  tls_info?: Record<string, any>
+  dns_email?: Record<string, any>
+  headers?: Record<string, string>
   cookies?: Array<{ name: string; secure?: boolean; httpOnly?: boolean }>
-  // añade los campos que devuelva tu backend
 }
 
 export default function WebGuardPage() {
@@ -27,110 +42,91 @@ export default function WebGuardPage() {
     setData(null)
 
     if (!/^https?:\/\//i.test(domain)) {
-        return setError("Incluye el protocolo, por ejemplo: https://midominio.com")
+      return setError("Incluye el protocolo, por ejemplo: https://midominio.com")
     }
 
     try {
-        setLoading(true)
+      setLoading(true)
 
-        // 👇 aquí usas tu helper en lugar del fetch directo
-        const json = await apiFetch(
-          "/webguard/analyze",
-          { method: "POST", body: JSON.stringify({ url: domain }) },
-          token ?? undefined
-        )
+      const json = await apiFetch(
+        "/webguard/analyze",
+        { method: "POST", body: JSON.stringify({ url: domain }) },
+        token ?? undefined
+      )
 
-
-        setData(json) // guarda los resultados en el estado
+      setData(json)
     } catch (err: any) {
-        setError(err.message || "No se pudo analizar")
+      setError(err.message || "No se pudo analizar")
     } finally {
-        setLoading(false)
+      setLoading(false)
     }
   }
 
   return (
     <Protected>
       <main className="relative z-10 mx-auto max-w-4xl p-6 space-y-6">
+
+        {/* Header */}
         <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">WebGuard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">WebGuard</h1>
         </header>
 
-        <form onSubmit={onAnalyze} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex gap-3 flex-col sm:flex-row">
+        {/* Formulario */}
+        <form
+          onSubmit={onAnalyze}
+          className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex gap-3 flex-col sm:flex-row backdrop-blur-md"
+        >
           <input
-            className="flex-1 rounded-xl border border-white/15 bg-transparent px-3 py-2"
+            className="flex-1 rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-white placeholder-white/40"
             placeholder="https://tu-dominio.com"
             value={domain}
             onChange={(e)=>setDomain(e.target.value.trim())}
           />
           <button
             disabled={loading}
-            className="rounded-xl bg-white text-black px-5 py-2 disabled:opacity-60"
+            className="rounded-xl bg-white text-black px-5 py-2 disabled:opacity-60 font-semibold hover:bg-neutral-200 transition"
           >
             {loading ? "Analizando..." : "Analizar"}
           </button>
         </form>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {/* Error */}
+        {error && (
+          <p className="text-sm text-red-400">{error}</p>
+        )}
 
-        {/* Resultados */}
+        {/* Loading */}
         {loading && (
-          <div className="rounded-2xl border border-white/10 p-6 animate-pulse">
+          <div className="rounded-2xl border border-white/10 p-6 animate-pulse bg-white/[0.03]">
             Cargando resultados…
           </div>
         )}
 
+        {/* RESULTADOS */}
         {data && (
-          <section className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-              <h2 className="text-xl font-semibold">Resumen</h2>
-              <p className="opacity-80 mt-1"><b>Dominio:</b> {data.domain}</p>
-              {"score" in data && <p className="opacity-80"><b>Score:</b> {data.score}</p>}
-            </div>
+          <section className="space-y-8">
 
-            {data.ssl && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                <h3 className="font-semibold mb-2">SSL</h3>
-                <p><b>Válido:</b> {data.ssl.valid ? "Sí" : "No"}</p>
-                {data.ssl.issuer && <p><b>Issuer:</b> {data.ssl.issuer}</p>}
-                {"expiresInDays" in data.ssl && <p><b>Expira en:</b> {data.ssl.expiresInDays} días</p>}
-              </div>
-            )}
+            {/* ⭐ SCORE CARD */}
+            <ScoreCard score={data.quick_score} grade={data.grade} />
 
-            {data.headers && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                <h3 className="font-semibold mb-2">Cabeceras</h3>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {Object.entries(data.headers).map(([k, v]) => (
-                    <div key={k} className="rounded-xl border border-white/10 p-3">
-                      <p className="text-xs opacity-60">{k}</p>
-                      <p className="text-sm break-words">{String(v)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* 🛑 RIESGOS */}
+            <RiskList risks={data.risks} />
 
-            {data.cookies && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                <h3 className="font-semibold mb-2">Cookies</h3>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {data.cookies.map((c, i) => (
-                    <div key={i} className="rounded-xl border border-white/10 p-3">
-                      <p className="font-medium">{c.name}</p>
-                      <p className="text-xs opacity-70">secure: {String(c.secure)} | httpOnly: {String(c.httpOnly)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* 🟢 PUNTOS POSITIVOS */}
+            <GoodPoints points={data.good_points} />
 
-            <div className="flex gap-3">
-              <button className="rounded-xl border border-white/15 px-4 py-2">Guardar</button>
-              <button className="rounded-xl bg-white text-black px-4 py-2">Descargar PDF</button>
-            </div>
+            {/* 🔧 SECCIÓN TÉCNICA */}
+            <TechnicalAccordion
+              headers={data.headers}
+              cookies={data.cookies}
+            />
+
+            {/* 🚀 CTA PRO */}
+            <UpgradeCTA />
+
           </section>
         )}
+
       </main>
     </Protected>
   )

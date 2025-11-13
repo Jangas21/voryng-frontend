@@ -7,8 +7,6 @@ import Link from "next/link"
 export default function Dashboard() {
   const { user, logout } = useAuth()
 
-  const isPro = user?.role === "pro" // O ajusta al campo real que uses
-
   return (
     <Protected>
       <main className="w-full flex flex-col items-center mt-20 mb-20 px-5 space-y-10">
@@ -44,14 +42,9 @@ export default function Dashboard() {
             </Link>
 
             {/* Quick scans NO se guardan */}
-            {!isPro && (
-              <p className="text-gray-400 text-sm mt-4">
-                Los análisis rápidos no se guardan.  
-                <Link href="/planes" className="text-blue-400 hover:underline">
-                  ¡Hazte PRO para almacenar tus informes!
-                </Link>
-              </p>
-            )}
+            <p className="text-gray-400 text-sm mt-4">
+              Los análisis rápidos no se guardan todavía.
+            </p>
           </div>
 
 
@@ -78,10 +71,7 @@ export default function Dashboard() {
             <div className="text-gray-300 space-y-2 mb-6">
               <p><strong className="text-white">Nombre:</strong> {user?.name}</p>
               <p><strong className="text-white">Email:</strong> {user?.email}</p>
-              <p>
-                <strong className="text-white">Plan:</strong>{" "}
-                {isPro ? "PRO" : "Gratuito"}
-              </p>
+              <p><strong className="text-white">Plan:</strong> Gratuito</p>
             </div>
 
             <button
@@ -91,23 +81,6 @@ export default function Dashboard() {
               Cerrar sesión
             </button>
           </div>
-
-
-          {/* --------- Historial solo si es PRO --------- */}
-          {isPro && (
-            <div className="rounded-xl p-7 bg-white/5 border border-white/10 backdrop-blur-lg shadow-lg md:col-span-2">
-              <h2 className="text-2xl font-semibold text-white mb-4">📑 Historial de reportes PRO</h2>
-
-              <p className="text-gray-400 mb-4">
-                Aquí aparecerán todos tus reportes guardados.
-              </p>
-
-              {/* Aquí cuando tengas backend: tabla de reportes */}
-              <p className="text-gray-500 italic">
-                (Aún no hay reportes guardados)
-              </p>
-            </div>
-          )}
 
         </div>
 

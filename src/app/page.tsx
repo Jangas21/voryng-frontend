@@ -6,6 +6,7 @@
 
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import { useEffect, useState } from 'react'
+import { WebGuardPreview } from "@/components/WebGuardPreview"
 
 // === UI Components =========================================================
 
@@ -128,7 +129,7 @@ function About() {
 
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
         <div className="aspect-video w-full rounded-2xl bg-gradient-to-br from-white/10 to-white/0"></div>
-        <p className="mt-3 text-sm text-white/60">Demo visual del panel (placeholder)</p>
+        <p className="mt-3 text-sm text-white/60">Demo visual del panel (WebGuardPreview)</p>
       </motion.div>
     </div>
   )

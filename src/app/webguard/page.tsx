@@ -145,7 +145,7 @@ export default function WebGuardPage() {
         {data && (
           <section className="space-y-8">
             <ScoreCard
-              score={data.score || data.quick_score}
+              score={data.score ?? data.quick_score ?? 0}
               grade={data.grade}
             />
 

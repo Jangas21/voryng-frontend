@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 
-type User = { id: string; name?: string; email: string }
+type User = { id: string; name?: string; email: string; plan?: string }
 type AuthContextType = {
   user: User | null
   token: string | null

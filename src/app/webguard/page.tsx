@@ -13,7 +13,8 @@ import { UpgradeCTA } from "@/components/webguard/UpgradeCTA";
 
 type ScanResult = {
   url: string;
-  quick_score: number;
+  score?: number;           // PRO
+  quick_score?: number;     // FREE
   grade: string;
   risks: Array<{ title: string; severity: string; why: string }>;
   good_points: string[];
@@ -30,7 +31,8 @@ type ScanResult = {
 };
 
 export default function WebGuardPage() {
-  const { token } = useAuth();
+  const { user, token } = useAuth();
+  const isPro = user?.plan === "pro";
 
   const [domain, setDomain] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +45,6 @@ export default function WebGuardPage() {
     setError(null);
     setData(null);
 
-    // Validación básica
     if (!/^https?:\/\//i.test(domain)) {
       return setError("Incluye el protocolo, ej: https://midominio.com");
     }
@@ -55,7 +56,10 @@ export default function WebGuardPage() {
         "/webguard/analyze",
         {
           method: "POST",
-          body: JSON.stringify({ url: domain }),
+          body: JSON.stringify({
+            url: domain,
+            mode: isPro ? "pro" : "quick", // 🔥 MODO CORRECTO
+          }),
         },
         token ?? undefined
       );
@@ -74,6 +78,14 @@ export default function WebGuardPage() {
         {/* HEADER */}
         <header className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight">WebGuard</h1>
+
+          {isPro ? (
+            <span className="text-green-400 font-semibold text-sm">
+              🛡️ PRO
+            </span>
+          ) : (
+            <span className="text-white/50 text-sm">Free</span>
+          )}
         </header>
 
         {/* FORM */}
@@ -92,7 +104,7 @@ export default function WebGuardPage() {
             disabled={loading}
             className="rounded-xl bg-white text-black px-5 py-2 disabled:opacity-60 font-semibold hover:bg-neutral-200 transition"
           >
-            {loading ? "Analizando..." : "Analizar"}
+            {loading ? "Analizando..." : isPro ? "Analizar PRO" : "Analizar"}
           </button>
         </form>
 
@@ -111,9 +123,7 @@ export default function WebGuardPage() {
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-10 backdrop-blur-lg text-center space-y-6">
             <h2 className="text-2xl font-semibold">Escanea tu sitio web</h2>
             <p className="text-white/70 max-w-xl mx-auto">
-              WebGuard analiza tu web en segundos y detecta problemas de
-              seguridad como headers faltantes, cookies inseguras y expiración
-              del certificado SSL/TLS.
+              WebGuard analiza tu web en segundos y detecta problemas de seguridad.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-white/60 mt-4">
@@ -123,23 +133,36 @@ export default function WebGuardPage() {
               <p>✓ Certificado SSL/TLS</p>
             </div>
 
-            <p className="text-white/50 text-sm">
-              Introduce tu dominio arriba para comenzar
-            </p>
+            {!isPro && (
+              <p className="text-white/60 text-sm mt-4">
+                ¿Quieres análisis avanzado? Actualiza a WebGuard Pro.
+              </p>
+            )}
           </div>
         )}
 
         {/* RESULTADOS */}
         {data && (
           <section className="space-y-8">
-            <ScoreCard score={data.quick_score} grade={data.grade} />
+            <ScoreCard
+              score={data.score || data.quick_score}
+              grade={data.grade}
+            />
+
             <RiskList risks={data.risks} />
+
             <GoodPoints points={data.good_points} />
+
             <TechnicalAccordion
               headers={data.headers}
               cookies={data.cookies}
+              tls={isPro ? data.tls_info : undefined}
+              dns={isPro ? data.dns_email : undefined}
+              findings={isPro ? data.findings : undefined}
             />
-            <UpgradeCTA />
+
+            {/* Mostrar CTA solo a usuarios FREE */}
+            {!isPro && <UpgradeCTA />}
           </section>
         )}
       </main>

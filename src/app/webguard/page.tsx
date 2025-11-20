@@ -158,7 +158,7 @@ export default function WebGuardPage() {
         {/* 🔹 Resultado */}
         {data && (
           <section className="space-y-8">
-            <ScoreCard score={data.quick_score ?? data.global_score} grade={data.grade} />
+            <ScoreCard score={data.quick_score ?? data.global_score ?? 0} grade={data.grade} />
             <RiskList risks={data.risks} />
             <GoodPoints points={data.good_points} />
             <TechnicalAccordion headers={data.headers} cookies={data.cookies} />

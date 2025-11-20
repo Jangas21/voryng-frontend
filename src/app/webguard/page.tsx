@@ -132,7 +132,11 @@ export default function WebGuardPage() {
         {/* RESULTADOS */}
         {data && (
           <section className="space-y-8">
+<<<<<<< HEAD
             <ScoreCard score={data.quick_score} grade={data.grade} />
+=======
+            <ScoreCard score={data.quick_score ?? data.global_score} grade={data.grade} />
+>>>>>>> parent of 35da051 (fix: typescript)
             <RiskList risks={data.risks} />
             <GoodPoints points={data.good_points} />
             <TechnicalAccordion

@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 
 type User = { id: string; name?: string; email: string; plan?: string }
+
 type AuthContextType = {
   user: User | null
   token: string | null
@@ -11,6 +12,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
+  setUser: React.Dispatch<React.SetStateAction<User | null>>   // 👈 AÑADIDO
 }
 
 const AuthContext = createContext<AuthContextType>({} as any)
@@ -18,9 +20,8 @@ const AuthContext = createContext<AuthContextType>({} as any)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true) // 👈 clave
+  const [loading, setLoading] = useState(true)
 
-  // Hidratar desde localStorage una sola vez
   useEffect(() => {
     try {
       const lsToken = localStorage.getItem('voryng_token')
@@ -28,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (lsToken) setToken(lsToken)
       if (lsUser)  setUser(JSON.parse(lsUser))
     } catch {}
-    setLoading(false) // 👈 cuando termina de leer
+    setLoading(false)
   }, [])
 
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'
@@ -58,7 +59,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        register,
+        logout,
+        setUser,     // 👈 AÑADIDO
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

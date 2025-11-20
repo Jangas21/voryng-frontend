@@ -156,9 +156,9 @@ export default function WebGuardPage() {
             <TechnicalAccordion
               headers={data.headers}
               cookies={data.cookies}
-              tls={isPro ? data.tls_info : undefined}
-              dns={isPro ? data.dns_email : undefined}
-              findings={isPro ? data.findings : undefined}
+              //tls={isPro ? data.tls_info : undefined}
+              //dns={isPro ? data.dns_email : undefined}
+              //findings={isPro ? data.findings : undefined}
             />
 
             {/* Mostrar CTA solo a usuarios FREE */}

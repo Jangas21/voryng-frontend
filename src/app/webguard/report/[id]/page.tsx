@@ -54,7 +54,7 @@ export default function ScanReportPage() {
 
   return (
     <Protected>
-      <main className="max-w-4xl mx-auto p-6 space-y-10">
+      <main className="relative z-20 max-w-4xl mx-auto p-6 space-y-10">
 
         <header className="space-y-2">
           <h1 className="text-3xl font-bold">Informe de seguridad</h1>

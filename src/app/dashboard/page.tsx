@@ -11,7 +11,7 @@ export default function Dashboard() {
 
   return (
     <Protected>
-      <main className="w-full flex flex-col items-center mt-20 mb-20 px-5 space-y-10">
+      <main className="relative z-20 w-full flex flex-col items-center mt-20 mb-20 px-5 space-y-10">
 
         {/* =====================
             Bienvenida

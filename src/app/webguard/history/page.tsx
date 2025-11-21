@@ -16,13 +16,13 @@ type ScanItem = {
 };
 
 export default function HistoryPage() {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const [domains, setDomains] = useState<DomainItem[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [scans, setScans] = useState<ScanItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load domains on start
+  // Load domains on mount
   useEffect(() => {
     const loadDomains = async () => {
       const json = await apiFetch("/webguard/domains", { method: "GET" }, token!);
@@ -43,12 +43,13 @@ export default function HistoryPage() {
 
   return (
     <Protected>
-      <main className="max-w-4xl mx-auto p-6 space-y-10">
+      {/* Asegura que todo este contenido esté siempre por encima de cualquier fondo */}
+      <main className="relative z-20 max-w-4xl mx-auto p-6 space-y-10 pointer-events-auto">
 
         <h1 className="text-3xl font-bold">Historial de análisis</h1>
 
         {/* LISTA DE DOMINIOS */}
-        <section className="space-y-4 p-5 rounded-xl bg-white/[0.04] border border-white/10">
+        <section className="relative z-20 space-y-4 p-5 rounded-xl bg-white/[0.04] border border-white/10 pointer-events-auto">
           <h2 className="text-xl font-semibold mb-3">Dominios analizados</h2>
 
           {domains.length === 0 && (
@@ -74,7 +75,7 @@ export default function HistoryPage() {
 
         {/* SCANS DEL DOMINIO */}
         {selectedDomain && (
-          <section className="space-y-4 p-5 rounded-xl bg-white/[0.04] border border-white/10">
+          <section className="relative z-20 space-y-4 p-5 rounded-xl bg-white/[0.04] border border-white/10 pointer-events-auto">
             <h2 className="text-xl font-semibold">
               Scans realizados para: <span className="text-blue-400">{selectedDomain}</span>
             </h2>
@@ -90,7 +91,7 @@ export default function HistoryPage() {
                 {scans.map((scan) => (
                   <div
                     key={scan.id}
-                    className="rounded-xl p-4 bg-black/30 border border-white/10"
+                    className="rounded-xl p-4 bg-black/30 border border-white/10 pointer-events-auto"
                   >
                     <div className="flex items-center justify-between">
                       <div>

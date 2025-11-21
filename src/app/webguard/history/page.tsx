@@ -34,8 +34,9 @@ export default function HistoryPage() {
   const loadScans = async (domain: string) => {
     setSelectedDomain(domain);
     setLoading(true);
-
-    const json = await apiFetch(`/webguard/domains/${domain}`, { method: "GET" }, token!);
+    
+    const encoded = encodeURIComponent(domain);
+    const json = await apiFetch(`/webguard/domains/${encoded}`, { method: "GET" }, token!);
     setScans(json);
 
     setLoading(false);

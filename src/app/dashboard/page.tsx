@@ -57,7 +57,7 @@ export default function Dashboard() {
             {/* Historial para PRO */}
             {isPro && (
               <Link
-                href="/webguard#history"
+                href="/webguard/history"
                 className="mt-4 inline-block text-sm text-blue-400 hover:underline"
               >
                 Ver historial de escaneos →

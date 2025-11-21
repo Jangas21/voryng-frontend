@@ -5,29 +5,87 @@ import Protected from "@/components/Protected";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/lib/api";
 
+// FREE components
 import { ScoreCard } from "@/components/webguard/ScoreCard";
 import { RiskList } from "@/components/webguard/RiskList";
 import { GoodPoints } from "@/components/webguard/GoodPoints";
 import { TechnicalAccordion } from "@/components/webguard/TechnicalAccordion";
 import { UpgradeCTA } from "@/components/webguard/UpgradeCTA";
 
+// PRO components
+import { SummaryCard } from "@/components/webguard/SummaryCard";
+import { TlsCard } from "@/components/webguard/TlsCard";
+import { DnsCard } from "@/components/webguard/DnsCard";
+import { FindingsCard } from "@/components/webguard/FindingsCard";
+import { TechCard } from "@/components/webguard/TechCard";
+
+type Category = {
+  score: number;
+  maxScore: number;
+  label: string;
+};
+
+type Recommendation = {
+  title: string;
+  area?: string;
+  recommendation: string;
+  severity: string;
+};
+
+type Finding = {
+  id?: string;
+  area?: string;
+  severity?: string;
+  title?: string;
+  description?: string;
+  recommendation?: string;
+};
+
 type ScanResult = {
   url: string;
-  score?: number;           // PRO
-  quick_score?: number;     // FREE
+  score?: number; // PRO
+  quick_score?: number; // FREE
   grade: string;
-  risks: Array<{ title: string; severity: string; why: string }>;
+
+  risks: Array<{
+    title: string;
+    severity: string;
+    why: string;
+    impact?: string;
+    priority?: string;
+  }>;
+
   good_points: string[];
   summary?: Record<string, any>;
-  findings?: any[];
+  findings?: Finding[];
+
   tls_info?: Record<string, any>;
   dns_email?: Record<string, any>;
+
   headers?: Record<string, string>;
   cookies?: Array<{
     name: string;
     secure?: boolean;
     httpOnly?: boolean;
+    httponly?: boolean;
+    samesite?: string;
   }>;
+
+  sections?: {
+    http?: any;
+    tls?: any;
+    dns?: any;
+    cookies?: any;
+    technology?: {
+      server?: string | null;
+      x_powered_by?: string | null;
+      exposes_technology?: boolean;
+    };
+  };
+
+  categories?: Record<string, Category>;
+  overall_risk?: string;
+  recommendations?: Recommendation[];
 };
 
 export default function WebGuardPage() {
@@ -58,7 +116,7 @@ export default function WebGuardPage() {
           method: "POST",
           body: JSON.stringify({
             url: domain,
-            mode: isPro ? "pro" : "quick", // 🔥 MODO CORRECTO
+            mode: isPro ? "pro" : "quick",
           }),
         },
         token ?? undefined
@@ -80,9 +138,7 @@ export default function WebGuardPage() {
           <h1 className="text-3xl font-bold tracking-tight">WebGuard</h1>
 
           {isPro ? (
-            <span className="text-green-400 font-semibold text-sm">
-              🛡️ PRO
-            </span>
+            <span className="text-green-400 font-semibold text-sm">🛡️ PRO</span>
           ) : (
             <span className="text-white/50 text-sm">Free</span>
           )}
@@ -144,24 +200,68 @@ export default function WebGuardPage() {
         {/* RESULTADOS */}
         {data && (
           <section className="space-y-8">
+            {/* SCORE */}
             <ScoreCard
               score={data.score ?? data.quick_score ?? 0}
               grade={data.grade}
             />
 
+            {/* RISKS & GOOD POINTS */}
             <RiskList risks={data.risks} />
-
             <GoodPoints points={data.good_points} />
 
+            {/* SUMMARY PRO */}
+            {isPro && (
+              <SummaryCard
+                categories={data.categories}
+                overallRisk={data.overall_risk}
+                recommendations={data.recommendations}
+              />
+            )}
+
+            {/* TLS PRO */}
+            {isPro && data.tls_info && (
+              <TlsCard
+                data={{
+                  valid: data.tls_info.valid,
+                  issuer: data.tls_info.issuer,
+                  subject: data.tls_info.subject,
+                  valid_from: data.tls_info.valid_from,
+                  valid_to: data.tls_info.valid_to,
+                  protocol: data.tls_info.protocol,
+                  days_remaining: data.tls_info.days_to_expiry,
+                  error: data.tls_info.error,
+                }}
+              />
+            )}
+
+            {/* DNS PRO */}
+            {isPro && data.dns_email && (
+              <DnsCard
+                data={{
+                  a: data.dns_email.a,
+                  aaaa: data.dns_email.aaaa,
+                  mx: data.dns_email.mx,
+                  caa: data.dns_email.caa,
+                  spf: data.dns_email.spf_raw,
+                  dmarc: data.dns_email.dmarc_raw,
+                }}
+              />
+            )}
+
+            {/* HEADERS + COOKIES */}
             <TechnicalAccordion
               headers={data.headers}
               cookies={data.cookies}
-              //tls={isPro ? data.tls_info : undefined}
-              //dns={isPro ? data.dns_email : undefined}
-              //findings={isPro ? data.findings : undefined}
             />
 
-            {/* Mostrar CTA solo a usuarios FREE */}
+            {/* FINDINGS PRO */}
+            {isPro && <FindingsCard findings={data.findings} />}
+
+            {/* TECHNOLOGIES PRO */}
+            {isPro && <TechCard data={data.sections?.technology} />}
+
+            {/* CTA FREE */}
             {!isPro && <UpgradeCTA />}
           </section>
         )}

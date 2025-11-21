@@ -1,65 +1,173 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
-export const TechnicalAccordion = ({
+type HeaderMap = Record<string, string>;
+type CookieItem = {
+  name: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+};
+
+type TechnicalAccordionProps = {
+  headers?: HeaderMap;
+  cookies?: CookieItem[];
+  tls?: Record<string, any>;
+  dns?: Record<string, any>;
+  findings?: Array<any>;
+};
+
+export function TechnicalAccordion({
   headers,
-  cookies
-}: {
-  headers?: Record<string, string>
-  cookies?: Array<{ name: string; secure?: boolean; httpOnly?: boolean }>
-}) => {
-  
-  const [open, setOpen] = useState(false)
+  cookies,
+  tls,
+  dns,
+  findings,
+}: TechnicalAccordionProps) {
+  const [open, setOpen] = useState<string | null>(null);
 
-  if (!headers && !cookies) return null
+  const toggle = (key: string) => {
+    setOpen(open === key ? null : key);
+  };
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full text-left text-lg font-semibold mb-3 text-white hover:opacity-80"
+    <div className="space-y-4">
+
+      {/* HEADERS */}
+      <AccordionItem
+        title="HTTP Security Headers"
+        open={open === "headers"}
+        onClick={() => toggle("headers")}
       >
-        {open ? "▼ Detalles técnicos" : "► Detalles técnicos"}
+        {!headers && <p className="text-white/60">No disponible.</p>}
+        {headers && (
+          <div className="space-y-2">
+            {Object.entries(headers).map(([k, v]) => (
+              <div key={k} className="text-white/80 text-sm">
+                <strong>{k}:</strong> {String(v)}
+              </div>
+            ))}
+          </div>
+        )}
+      </AccordionItem>
+
+      {/* COOKIES */}
+      <AccordionItem
+        title="Cookies"
+        open={open === "cookies"}
+        onClick={() => toggle("cookies")}
+      >
+        {!cookies || cookies.length === 0 && (
+          <p className="text-white/60">No se encontraron cookies.</p>
+        )}
+
+        {cookies && cookies.length > 0 && (
+          <ul className="space-y-2">
+            {cookies.map((c, i) => (
+              <li key={i} className="text-white/80 text-sm">
+                <strong>{c.name}</strong> — Secure:{" "}
+                {c.secure ? "Sí" : "No"} | HttpOnly:{" "}
+                {c.httpOnly ? "Sí" : "No"}
+              </li>
+            ))}
+          </ul>
+        )}
+      </AccordionItem>
+
+      {/* TLS */}
+      <AccordionItem
+        title="TLS / SSL Details"
+        open={open === "tls"}
+        onClick={() => toggle("tls")}
+      >
+        {!tls && <p className="text-white/60">Solo disponible en PRO.</p>}
+
+        {tls && (
+          <div className="space-y-2 text-white/80 text-sm">
+            {Object.entries(tls).map(([k, v]) => (
+              <div key={k}>
+                <strong>{k}:</strong>{" "}
+                {typeof v === "object" ? JSON.stringify(v) : String(v)}
+              </div>
+            ))}
+          </div>
+        )}
+      </AccordionItem>
+
+      {/* DNS */}
+      <AccordionItem
+        title="DNS & Email Security"
+        open={open === "dns"}
+        onClick={() => toggle("dns")}
+      >
+        {!dns && <p className="text-white/60">Solo disponible en PRO.</p>}
+
+        {dns && (
+          <div className="space-y-2 text-white/80 text-sm">
+            {Object.entries(dns).map(([k, v]) => (
+              <div key={k}>
+                <strong>{k}:</strong>{" "}
+                {Array.isArray(v)
+                  ? v.join(", ")
+                  : typeof v === "object"
+                  ? JSON.stringify(v)
+                  : String(v)}
+              </div>
+            ))}
+          </div>
+        )}
+      </AccordionItem>
+
+      {/* FINDINGS */}
+      <AccordionItem
+        title="Findings Técnicos (PRO)"
+        open={open === "findings"}
+        onClick={() => toggle("findings")}
+      >
+        {!findings && (
+          <p className="text-white/60">Solo disponible en PRO.</p>
+        )}
+
+        {findings && findings.length > 0 && (
+          <ul className="space-y-4">
+            {findings.map((f, i) => (
+              <li key={i} className="text-white/80 text-sm p-3 border border-white/10 rounded-lg">
+                <strong className="text-red-400">{f.title}</strong>
+                <p className="text-white/70">{f.description}</p>
+                <p className="text-green-400 text-sm mt-1">
+                  Recomendación: {f.recommendation}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </AccordionItem>
+    </div>
+  );
+}
+
+function AccordionItem({
+  title,
+  children,
+  open,
+  onClick,
+}: {
+  title: string;
+  children: React.ReactNode;
+  open: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div className="border border-white/10 rounded-xl bg-white/[0.03]">
+      <button
+        onClick={onClick}
+        className="w-full text-left p-4 font-semibold text-white flex justify-between"
+      >
+        {title}
+        <span className="text-white/50">{open ? "−" : "+"}</span>
       </button>
 
-      {open && (
-        <div className="space-y-6">
-          
-          {/* HEADERS */}
-          {headers && (
-            <div>
-              <h3 className="font-semibold mb-2">Cabeceras</h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {Object.entries(headers).map(([k, v]) => (
-                  <div key={k} className="rounded-xl border border-white/10 p-3">
-                    <p className="text-xs opacity-60">{k}</p>
-                    <p className="text-sm break-words">{String(v)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* COOKIES */}
-          {cookies && cookies.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-2">Cookies</h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {cookies.map((c, i) => (
-                  <div key={i} className="rounded-xl border border-white/10 p-3">
-                    <p className="font-medium">{c.name}</p>
-                    <p className="text-xs opacity-70">
-                      secure: {String(c.secure)} | httpOnly: {String(c.httpOnly)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-        </div>
-      )}
+      {open && <div className="p-4">{children}</div>}
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/app/page" 
+import { Button } from "@/components/Button"
 // Si tu Button está en otro archivo, dímelo y lo ajusto
 
 export function Contact() {

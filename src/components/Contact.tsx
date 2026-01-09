@@ -36,6 +36,7 @@ export function Contact() {
     setError(null)
 
     try {
+      console.log("[contact] sending to", (process.env.NEXT_PUBLIC_API_BASE_URL || "/api") + "/contact")
       await apiFetch("/contact", {
         method: "POST",
         body: JSON.stringify(form),

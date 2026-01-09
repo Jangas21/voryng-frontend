@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
   withCredentials: false,
 });
 
@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
 });
 
 export async function apiFetch(path: string, opts: RequestInit = {}, token?: string) {
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
   const headers = new Headers(opts.headers || {})
   headers.set("Content-Type", "application/json")
   if (token) headers.set("Authorization", `Bearer ${token}`)

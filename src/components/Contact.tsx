@@ -2,7 +2,6 @@
 
 import { useState, ChangeEvent, FormEvent } from "react"
 import { Button } from "@/components/Button"
-import { apiFetch } from "@/lib/api"
 
 type ContactStatus = "idle" | "loading" | "success" | "error"
 
@@ -36,11 +35,21 @@ export function Contact() {
     setError(null)
 
     try {
-      console.log("[contact] sending to", (process.env.NEXT_PUBLIC_API_BASE_URL || "/api") + "/contact")
-      await apiFetch("/contact", {
+      console.log("[contact] sending to", "/api/contact")
+      const res = await fetch("/api/contact", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       })
+
+      if (!res.ok) {
+        let message = "Error enviando correo"
+        try {
+          const data = await res.json()
+          message = data?.error || data?.message || message
+        } catch {}
+        throw new Error(message)
+      }
 
       setStatus("success")
       setForm({ name: "", email: "", message: "" })

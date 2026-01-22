@@ -51,7 +51,7 @@ export function Contact() {
       // ======================================================
 
       const res = await fetch(
-        "https://voryng-backend.onrender.com/api/contact",
+        "/api/contact",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

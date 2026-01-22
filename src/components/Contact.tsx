@@ -26,7 +26,7 @@ export function Contact() {
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      setError("Email no valido.")
+      setError("Email no válido.")
       setStatus("error")
       return
     }
@@ -35,12 +35,32 @@ export function Contact() {
     setError(null)
 
     try {
-      console.log("[contact] sending to", "/api/contact")
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
+      // === reCAPTCHA v3 =====================================
+      if (
+        typeof window === "undefined" ||
+        !(window as any).grecaptcha
+      ) {
+        throw new Error("reCAPTCHA no disponible")
+      }
+
+      const recaptchaToken = await (window as any).grecaptcha.execute(
+        process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!,
+        { action: "contact" }
+      )
+
+      // ======================================================
+
+      const res = await fetch(
+        "https://voryng-backend.onrender.com/api/contact",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...form,
+            recaptchaToken,
+          }),
+        }
+      )
 
       if (!res.ok) {
         let message = "Error enviando correo"
@@ -67,12 +87,12 @@ export function Contact() {
       <div>
         <h2 className="text-3xl font-semibold">Contacto</h2>
         <p className="mt-2 text-white/70">
-          Quieres utilizar WebGuard en tu empresa? Escribenos y te respondemos en 48h.
+          ¿Quieres utilizar WebGuard en tu empresa? Escríbenos y te respondemos en 48h.
         </p>
 
         <div className="mt-6 space-y-2 text-white/80">
           <p>Email: contact@voryng.com</p>
-          <p>Horario: L-V 9:00-18:00</p>
+          <p>Horario: L-V 9:00–18:00</p>
         </div>
       </div>
 
@@ -106,11 +126,13 @@ export function Contact() {
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Enviando..." : "Enviar"}
           </Button>
+
           {status === "success" && (
             <p className="text-sm text-green-400">
               Mensaje enviado. Te contactamos en 48h.
             </p>
           )}
+
           {status === "error" && error && (
             <p className="text-sm text-red-400">{error}</p>
           )}

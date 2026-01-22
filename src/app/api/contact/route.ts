@@ -1,19 +1,42 @@
+export const runtime = "nodejs"
+
 import { NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 
-export async function GET() {
-  return NextResponse.json({ ok: true })
-}
-
 export async function POST(req: Request) {
   try {
-    const { name, email, message } = await req.json()
-    console.log("[api/contact] POST received", { name, email })
+    const { name, email, message, recaptchaToken } = await req.json()
 
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: "Faltan campos" }, { status: 400 })
+    // 1️⃣ Validaciones básicas
+    if (!name || !email || !message || !recaptchaToken) {
+      return NextResponse.json(
+        { error: "Datos incompletos" },
+        { status: 400 }
+      )
     }
 
+    // 2️⃣ Validar reCAPTCHA con Google
+    const captchaRes = await fetch(
+      "https://www.google.com/recaptcha/api/siteverify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
+      }
+    )
+
+    const captchaData = await captchaRes.json()
+
+    if (!captchaData.success || captchaData.score < 0.5) {
+      return NextResponse.json(
+        { error: "Actividad sospechosa detectada" },
+        { status: 403 }
+      )
+    }
+
+    // 3️⃣ Envío de email (Zoho SMTP)
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.eu",
       port: 587,
@@ -40,7 +63,10 @@ ${message}
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error enviando mail:", error)
-    return NextResponse.json({ error: "Error enviando correo" }, { status: 500 })
+    console.error("[api/contact] error:", error)
+    return NextResponse.json(
+      { error: "Error enviando correo" },
+      { status: 500 }
+    )
   }
 }

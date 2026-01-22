@@ -87,6 +87,11 @@ function Hero() {
           </span>
         </h1>
 
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-cyan-300">
+          WebGuard está disponible en <strong>versión Beta pública</strong>. 
+          El acceso es gratuito mientras seguimos mejorando la plataforma.
+        </p>
+
         <p className="mx-auto mt-5 max-w-2xl text-white/70">
           WebGuard detecta vulnerabilidades críticas, analiza cabeceras HTTP, verifica SSL,
           evalúa cookies inseguras y genera un informe claro en segundos.

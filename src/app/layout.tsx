@@ -52,6 +52,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
           strategy="afterInteractive"
         />
+        <Script 
+          defer src="https://cloud.umami.is/script.js" data-website-id="cff7c184-babb-482d-b245-e6a5497aeb24"
+        />
         <AppShell>{children}</AppShell>
       </body>
     </html>
